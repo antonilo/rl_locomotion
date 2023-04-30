@@ -1,0 +1,81 @@
+seed: 1
+record_video: yes
+environment:
+  use_priv_vel: true
+  use_slope_dots: true
+  render: false
+  num_envs: 200
+  eval_every_n: 2000
+  num_threads: 20
+  baseDim: 42
+  geomDim: 2
+  n_futures: 1
+  simulation_dt: 0.0025
+  control_dt: 0.01
+  max_time: 6.0
+  pid_coeff: 45.0
+  slope_threshold: 0.08
+  forwardVelRewardCoeff: 60
+  lateralVelRewardCoeff: 20
+  angularVelRewardCoeff: 35
+  torqueRewardCoeff: 0.0
+  deltaTorqueRewardCoeff: -0.0
+  actionRewardCoeff: -0.05
+  sidewaysRewardCoeff: -0.03
+  jointSpeedRewardCoeff: -0.0007
+  deltaContactRewardCoeff: -0.0
+  deltaReleaseRewardCoeff: -0.0
+  contactRewardCoeff: 0.0
+  contactDistRewardCoeff: 0.0
+  footSlipRewardCoeff: -0.2
+  footClearenceRewardCoeff: 0.0
+  contactChangeRewardCoeff: 0.0
+  upwardRewardCoeff: -0.
+  workRewardCoeff: -0.05
+  yAccRewardCoeff: -0.0
+  max_speed: 0.4
+  lat_speed: 0.3
+  ang_speed: 0.6
+  alive_bonus: 18
+  cost_coeff: 1.0
+  cost_decay_fac: 0.997
+  roughTerrain: true
+  terrainFreq: 1
+  dynNoise: 0.0
+  privinfo: true
+  includeGRF: false
+  test: false
+  randomize_friction: true
+  randomize_mass: true
+  randomize_motor_strength: true
+  randomize_gains: true
+  randomize_yaw: false
+  fourier: false
+  regular_dim: 46
+  regular_fourier_dim: 128
+  privy_fourier_dim: 2
+  encoder_dim: 1
+  fourier_scale: 50
+  fourier_trainable: true
+  fourier_value: true
+  fourier_policy: true
+  cts_target_speed: false
+  target_speed_period: 1000
+  target_end_speed: 3.0
+  target_start_speed: 0.0
+  observe_base_speed: false
+  bodyLinearVel_avg_weight: 0.2
+  target_speed_curriculum: false
+  unnormalize_speed_vec: false
+  speedTest: false
+architecture:
+  policy_net: [128, 128]
+  value_net: [128, 128]
+  freeze_encoder: false
+  activation: tanh
+  small_init: false
+  speed_vec_start_idx: 42
+  speed_vec_end_idx: 46
+  layer_type: feedforward
+  film_init_std: 0.1
+test: false

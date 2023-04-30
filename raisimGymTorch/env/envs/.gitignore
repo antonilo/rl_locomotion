@@ -1,0 +1,18 @@
+# Ignore everything in repository root 
+/*
+
+# Files to not ignore
+!/.gitignore
+!/some_other_files
+
+# Folder to not ignore
+!/rsg*/
+!/a1_basic/
+!/a1_deploy/
+!/a1_general/
+!/a1_model_based/
+!/vision_a1/
+!/dagger_a1/
+!/sysid_a1/
+!/arma_a1/
+
