@@ -124,7 +124,7 @@ It will take approximately 2K iterations to train a good enough policy. If you w
 
 ### Visualizing and evaluating a blind policy
 
-You can follow exactly the same steps as for the priviledged policy (but now running commands from [this folder](./raisimGymTorch/env/envs/dagger_a1/) to visualize and benchmark a blind policy.
+You can follow exactly the same steps as for the priviledged policy (but now running commands from [this folder](./raisimGymTorch/env/envs/dagger_a1/)) to visualize and benchmark a blind policy.
 
 ### Using a blind policy on a real robot
 
