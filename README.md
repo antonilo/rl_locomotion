@@ -1,7 +1,7 @@
 # Cross-Modal Supervision (Policy Training Code)
 
 This repo contains the policy training code associated with the paper Learning Visual Locomotion with Cross-Modal Supervision.
-For more information, please check the [project webpage](https://antonilo.github.io/vision_locomotion/). For using the policy with vision on a real robot, please refer to [this repository]().
+For more information, please check the [project webpage](https://antonilo.github.io/vision_locomotion/). For using the policy with vision on a real robot, please refer to [this repository](https://github.com/antonilo/vision_locomotion).
 
 
 #### Paper, Video, and Datasets
@@ -35,9 +35,9 @@ Run the following commands to install the training environments
 
 ```
 cd raisimLib
-git clone TODO
+git clone git@github.com:antonilo/rl_locomotion.git
 rm -rf raisimGymTorch
-mv TODO raisimGymTorch
+mv rl_locomotion raisimGymTorch
 cd raisimGymTorch
 # You might want to create a new conda environment if you did not do it already for the vision part
 conda create --name cms python=3.8
@@ -128,4 +128,4 @@ You can follow exactly the same steps as for the priviledged policy (but now run
 
 ### Using a blind policy on a real robot
 
-If you want to use a policy you trained on a real robot, you should first move it in the [models folder](todo), and change the path to the model in the [launch_file]() and the policy id in the [parameter_file](). 
+If you want to use a policy you trained on a real robot, you should first move it in the [models folder](), and change the path to the model in the [launch_file]() and the policy id in the [parameter_file](). 
