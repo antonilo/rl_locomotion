@@ -1,7 +1,7 @@
 # Cross-Modal Supervision (Policy Training Code using RMA)
 
-This repo builds on the code from ```RMA: Rapid Motor Adaptation for Legged Robots``` to train the blind adaptive policy associated with the paper ```Learning Visual Locomotion with Cross-Modal Supervision```.
-For more information, please check the [RMA project page](https://ashish-kmr.github.io/rma-legged-robots/) and [CMS project webpage](https://antonilo.github.io/vision_locomotion/). For using the policy with vision on a real robot, please refer to [this repository](https://github.com/antonilo/vision_locomotion).
+This repo builds on the code from ```RMA: Rapid Motor Adaptation for Legged Robots``` to train the locomotion policy associated with the paper ```Learning Visual Locomotion with Cross-Modal Supervision```.
+For more information, please check the [RMA project page](https://ashish-kmr.github.io/rma-legged-robots/) and [CMS project webpage](https://antonilo.github.io/vision_locomotion/). For using the policy on a real robot, please refer to [this repository](https://github.com/antonilo/vision_locomotion).
 
 
 #### Paper, Video, and Datasets
