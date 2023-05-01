@@ -1,13 +1,9 @@
-from datetime import datetime
-import os
-from xml.sax.handler import property_declaration_handler
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 from .storage import ObsStorage 
-from collections import deque
+
 
 # computes and returns the latent from the expert
 class DaggerExpert(nn.Module):
@@ -27,7 +23,6 @@ class DaggerExpert(nn.Module):
         self.mean = self.get_tiled_scales(obs_mean, nenvs, total_obs_size, base_obs_size, T)
         self.var = self.get_tiled_scales(obs_var, nenvs, total_obs_size, base_obs_size, T)
         self.tail_size = total_obs_size - (T + 1) * base_obs_size
-        #self.queue_geom = deque(maxlen=15)
 
     def get_tiled_scales(self, invec, nenvs, total_obs_size, base_obs_size, T):
         outvec = np.zeros([nenvs, total_obs_size], dtype = np.float32)
@@ -38,12 +33,7 @@ class DaggerExpert(nn.Module):
     def forward(self, obs):
         obs = obs[:,-self.tail_size:]
         with torch.no_grad():
-            #prop_latent = self.policy.prop_encoder(obs[:,:-self.geomDim * (self.n_futures+1)]).detach()
-            #start = - self.geomDim * (self.n_futures + 1)
-            #end = - self.geomDim * (self.n_futures)
-            ## only compute a single geom encoding
-            #geom_latent = self.policy.geom_encoder(obs[:,start:end]).detach()
-            prop_latent = self.policy.prop_encoder(obs[:, :-self.geomDim*(self.n_futures+1)-1]) # since there is also slope
+            prop_latent = self.policy.prop_encoder(obs[:, :-self.geomDim*(self.n_futures+1)-1]) # since there is also ref at the end
             geom_latents = []
             for i in reversed(range(self.n_futures+1)):
                 start = -(i+1)*self.geomDim -1
@@ -53,12 +43,8 @@ class DaggerExpert(nn.Module):
                 geom_latent = self.policy.geom_encoder(obs[:,start:end])
                 geom_latents.append(geom_latent)
             geom_latents = torch.hstack(geom_latents)
-            #self.queue_geom.append(geom_latents)
             expert_latent = torch.cat((prop_latent, geom_latents), dim=1)
-            # get action
-            #input_obs = torch.cat([obs[:,:-(self.n_futures+1)*self.geomDim-1, expert_latent], 1)
-            #expert_action = self.policy.action_mlp(input_obs)
-        return expert_latent, expert_action
+        return expert_latent
 
 class DaggerAgent:
     def __init__(self, expert_policy,
@@ -160,36 +146,6 @@ class DaggerAgent:
         #self.geom_latent_encoder.to(self.device)
         self.student_mlp.to(self.device)
 
-class Student_Policy_wrap(nn.Module):
-    def __init__(self, base_obs_size, T, student_mlp, history_encoder):
-        super(Student_Policy_wrap, self).__init__()
-        self.base_obs_size = base_obs_size
-        self.T = T
-        self.student_mlp = student_mlp
-        self.history_encoder = history_encoder
-        self.his_len = base_obs_size * T
-    
-    def forward(self, obs):
-        latent = self.history_encoder(obs[:, : self.his_len])
-        obs_latent = torch.cat([obs[:, self.his_len: self.his_len + self.base_obs_size], latent], 1)
-        output = self.student_mlp.architecture(obs_latent)
-        return output
-
-class PolicyEnsemble(nn.Module):
-    def __init__(self, expert_1, expert_2, expert_3, num_envs):
-        super(PolicyEnsemble, self).__init__()
-        self.expert_1 = expert_1
-        self.expert_2 = expert_2
-        self.expert_3 = expert_3 
-        self.num_envs = num_envs
-        self.num_envs_per_expert = self.num_envs // 3
-    
-    def forward(self, obs):
-        action_1 = self.expert_1(obs[: self.num_envs_per_expert])
-        action_2 = self.expert_2(obs[self.num_envs_per_expert: 2 * self.num_envs_per_expert])
-        action_3 = self.expert_3(obs[2 * self.num_envs_per_expert: 3 * self.num_envs_per_expert])
-        return torch.cat([action_1, action_2, action_3], axis=0)
-
 class DaggerTrainer:
     def __init__(self,
             actor,
@@ -261,105 +217,3 @@ class DaggerTrainer:
 
         self.scheduler.step()
         return avg_prop_loss, avg_geom_loss
-
-class Daggger_RL_Critic:
-    def __init__(self, architecture, base_obs_size, T, all_obs_size, device='cpu'):
-        super(Daggger_RL_Critic, self).__init__()
-        self.architecture = architecture
-        self.architecture.to(device)
-        self.his_len = base_obs_size * T
-        self.all_obs_size = all_obs_size
-
-    def predict(self, obs):
-        obs = obs[:, self.his_len: ]
-        return self.architecture.architecture(obs).detach()
-
-    def evaluate(self, obs):
-        obs = obs[:, self.his_len: ]
-        return self.architecture.architecture(obs)
-
-    def parameters(self):
-        return [*self.architecture.parameters()]
-
-    @property
-    def obs_shape(self):
-        return [self.all_obs_size]
-
-
-class ArmaAgent():
-    def __init__(self, action_mlp,
-                 prop_latent_encoder,
-                 T, base_obs_size, device, n_futures=3, privdim=20):
-        prop_latent_encoder.to(device)
-        action_mlp.to(device)
-        self.prop_latent_encoder = prop_latent_encoder
-        self.action_mlp = action_mlp
-        self.base_obs_size = base_obs_size
-        self.T = T
-        self.device = device
-        self.n_futures = n_futures
-        self.itr = 0
-        self.current_prob = 0
-        self.privdim = privdim
-        self.latent_dim = prop_latent_encoder.output_shape
-        # Arma keeps the encoder fixed
-        for net_i in [self.prop_latent_encoder]:
-            for param in net_i.parameters():
-                param.requires_grad = False
-
-    def set_itr(self, itr):
-        self.itr = itr
-        if (itr+1) % 100 == 0:
-            self.current_prob += 0.1
-            print(f"Probability set to {self.current_prob}")
-
-    def get_history_encoding(self, obs):
-        hlen = self.base_obs_size * self.T
-        raw_obs = obs[:, : hlen]
-        # Hack to add velocity
-        #velocity = obs[:, self.velocity_idx] -> Velocity thing is not robust
-        #raw_obs[:, -3:] = velocity
-        prop_latent = self.prop_latent_encoder(raw_obs)
-        #geom_latent = self.geom_latent_encoder(raw_obs)
-        return prop_latent
-
-    def forward(self, obs):
-        hlen = self.base_obs_size * self.T
-        obdim = self.base_obs_size
-        prop_latent = self.get_history_encoding(obs)
-        output = torch.cat([obs[:, hlen : hlen + obdim], prop_latent], 1)
-        output = self.action_mlp.architecture(output)
-        return output
-
-    def architecture(self, obs):
-        # weird name to support ppo actor
-        return self.forward(obs)
-
-    def save_deterministic_graph(self, fname_prop_encoder,
-                                 fname_mlp, example_input, device='cpu'):
-
-        hlen = self.base_obs_size * self.T
-        prop_encoder_graph = torch.jit.trace(self.prop_latent_encoder.to(device), example_input[:, :hlen])
-        torch.jit.save(prop_encoder_graph, fname_prop_encoder)
-
-        #breakpoint()
-
-        mlp_graph = torch.jit.trace(self.action_mlp.architecture.to(device), example_input[:, hlen:])
-        torch.jit.save(mlp_graph, fname_mlp)
-
-        self.prop_latent_encoder.to(self.device)
-        #self.geom_latent_encoder.to(self.device)
-        self.action_mlp.to(self.device)
-
-    @property
-    def input_shape(self):
-        # A bit messy, but should be correct
-        return [self.action_mlp.input_shape[0] + self.privdim - self.latent_dim + self.prop_latent_encoder.input_shape]
-
-    @property
-    def output_shape(self):
-        return self.action_mlp.output_shape
-
-    def parameters(self):
-        # TODO: check if this is correct
-        return self.action_mlp.parameters()
