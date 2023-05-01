@@ -1,18 +1,25 @@
-# Cross-Modal Supervision (Policy Training Code)
+# Cross-Modal Supervision (Policy Training Code using RMA)
 
-This repo contains the policy training code associated with the paper Learning Visual Locomotion with Cross-Modal Supervision.
-For more information, please check the [project webpage](https://antonilo.github.io/vision_locomotion/). For using the policy with vision on a real robot, please refer to [this repository](https://github.com/antonilo/vision_locomotion).
+This repo builds on the code from ```RMA: Rapid Motor Adaptation for Legged Robots``` to train the blind adaptive policy associated with the paper ```Learning Visual Locomotion with Cross-Modal Supervision```.
+For more information, please check the [RMA project page](https://ashish-kmr.github.io/rma-legged-robots/) and [CMS project webpage](https://antonilo.github.io/vision_locomotion/). For using the policy with vision on a real robot, please refer to [this repository](https://github.com/antonilo/vision_locomotion).
 
 
 #### Paper, Video, and Datasets
 
-If you use this code in an academic context, please cite the following publication:
+If you use this code in an academic context, please cite the following two publications:
 
-Paper: [Learning Visual Locomotion With Cross-Modal Supervision](https://antonilo.github.io/vision_locomotion/pdf/manuscript.pdf)
-
-Video (Narrated): [YouTube](https://youtu.be/d7I34YIdMdk)
+Papers:     
+[RMA: Rapid Motor Adaptation for Legged Robots](https://arxiv.org/abs/2107.04034), Narration: [Video](https://www.youtube.com/watch?v=qKF6dr_S-wQ)           
+[Learning Visual Locomotion With Cross-Modal Supervision](https://antonilo.github.io/vision_locomotion/pdf/manuscript.pdf), Narration: [Video](https://youtu.be/d7I34YIdMdk)
 
 ```
+  @InProceedings{kumar2021rma,
+   author={Kumar, Ashish and Fu, Zipeng and Pathak, Deepak and Malik, Jitendra},
+   title={{RMA: Rapid motor adaptation for legged robots}},
+   booktitle={Robotics: Science and Systems},
+   year={2021}
+  }
+
   @InProceedings{loquercio2022learn,
    author={Loquercio, Antonio and Kumar, and Malik, Jitendra},
    title={{Learning Visual Locomotion with Cross-Modal Supervision}},
