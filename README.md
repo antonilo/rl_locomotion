@@ -119,7 +119,7 @@ If you want to make any changes to the evaluation, feel free to edit [this file]
 
 ### Distilling a policy with priviledged information into a blind policy 
 
-Policy trained with priviledged information cannot be used on a physical robot. Therefore, we distill a priviledged policy using a slightly different version of [RMA](https://arxiv.org/abs/2107.04034) optimized for walking on complex terrains.
+A policy trained with priviledged information cannot be used on a physical robot. Therefore, we distill a priviledged policy using a slightly different version of [RMA](https://arxiv.org/abs/2107.04034) optimized for walking on complex terrains.
 
 To start training, you can use the following commands:
 
