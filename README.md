@@ -20,11 +20,14 @@ Papers:
    year={2021}
   }
 
-  @InProceedings{loquercio2022learn,
-   author={Loquercio, Antonio and Kumar, and Malik, Jitendra},
-   title={{Learning Visual Locomotion with Cross-Modal Supervision}},
-   booktitle={International Conference on Robotics and Automation},
-   year={2023}
+@inproceedings{loquercio2023learning,
+  title={Learning visual locomotion with cross-modal supervision},
+  author={Loquercio, Antonio and Kumar, Ashish and Malik, Jitendra},
+  booktitle={2023 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={7295--7302},
+  year={2023},
+  organization={IEEE}
+}
   }
 ```
 
