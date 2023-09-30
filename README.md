@@ -28,7 +28,6 @@ Papers:
   year={2023},
   organization={IEEE}
 }
-  }
 ```
 
 ## Usage
